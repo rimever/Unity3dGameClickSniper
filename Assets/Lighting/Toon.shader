@@ -4,7 +4,6 @@ Shader "Unlit/Toon"
     Properties
     {
         _ToonLightColor ("Toon Light Color", Color) = (1,1,1,1)
-        _ToonDarkColor("Toon Dark Color", Color) = (0.5,0.5,0.5,1)
         _OutlineColor("Outline Color", Color) = (0,0,0,1)
         _OutlineWidth("Outline Width", Range(0.01,0.1)) = 0.01
     }
@@ -49,7 +48,6 @@ Shader "Unlit/Toon"
             #pragma fragment frag
 
             uniform fixed4 _ToonLightColor;
-            uniform fixed4 _ToonDarkColor;
 
             struct appdata
             {
@@ -76,7 +74,8 @@ Shader "Unlit/Toon"
                 half3 normal = normalize(i.normal);
                 half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 half NdotL = saturate(dot(normal, lightDir));
-                fixed3 toon = lerp(_ToonLightColor.rgb, _ToonDarkColor.rgb, step(NdotL, 0));
+                half3 toonDarkColor = _ToonLightColor.rgb * 0.5;
+                fixed3 toon = lerp(_ToonLightColor.rgb, toonDarkColor, step(NdotL, 0));
                 fixed4 color = fixed4(toon, 1.0);
                 return color;
             }
